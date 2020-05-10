@@ -1,4 +1,6 @@
 # individual-project
+# Food Recipe Recommendation App
+## This app will give you a food recommendation and its recipe based on your ingredients preference
 
 ##Notes
 1. Ide aplikasinya tidak boleh sama (cantumkan juga idenya di deskripsi PR)
