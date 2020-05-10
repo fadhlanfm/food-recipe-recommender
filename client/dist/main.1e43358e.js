@@ -10969,6 +10969,9 @@ var _default = {
         console.log(err);
       });
     },
+    removeIngredient: function removeIngredient(index) {
+      this.ingredients.splice(index, 1);
+    },
     logout: function logout() {
       this.$emit('logout', 'FormLogin');
     }
@@ -11063,7 +11066,22 @@ exports.default = _default;
           _c(
             "ul",
             _vm._l(_vm.ingredients, function(ingredient, i) {
-              return _c("li", { key: i }, [_vm._v(_vm._s(ingredient))])
+              return _c("li", { key: i }, [
+                _vm._v(_vm._s(ingredient) + " "),
+                _c(
+                  "a",
+                  {
+                    attrs: { href: "" },
+                    on: {
+                      click: function($event) {
+                        $event.preventDefault()
+                        return _vm.removeIngredient(i)
+                      }
+                    }
+                  },
+                  [_vm._m(0, true)]
+                )
+              ])
             }),
             0
           ),
@@ -11092,7 +11110,8 @@ exports.default = _default;
     _vm._v(" "),
     _vm.recipe.label
       ? _c("div", { staticClass: "result" }, [
-          _vm._v("\n          We recommend you:\n          "),
+          _vm._m(1),
+          _vm._v(" "),
           _c("h2", [_vm._v(_vm._s(_vm.recipe.label))]),
           _vm._v(" "),
           _c("img", { attrs: { src: _vm.recipe.image, alt: "" } }),
@@ -11105,22 +11124,44 @@ exports.default = _default;
             }),
             0
           ),
-          _vm._v(
-            "\n          Diet info: " + _vm._s(_vm.recipe.dietLabels.join(", "))
-          ),
-          _c("br"),
-          _vm._v(
-            "\n          Health info: " +
-              _vm._s(_vm.recipe.healthLabels.join(", "))
-          ),
-          _c("br"),
-          _vm._v("\n          How to cook? Click "),
+          _vm._v(" "),
+          _vm.recipe.dietLabels.length > 0
+            ? _c("p", [
+                _vm._v("Diet info: " + _vm._s(_vm.recipe.dietLabels.join(", ")))
+              ])
+            : _vm._e(),
+          _vm._v(" "),
+          _vm.recipe.healthLabels.length > 0
+            ? _c("p", [
+                _vm._v(
+                  "Health info: " + _vm._s(_vm.recipe.healthLabels.join(", "))
+                )
+              ])
+            : _vm._e(),
+          _vm._v("\n          How to cook "),
+          _c("a", { attrs: { href: _vm.recipe.url } }, [
+            _c("b", [_vm._v(_vm._s(_vm.recipe.label))])
+          ]),
+          _vm._v("? Click "),
           _c("a", { attrs: { href: _vm.recipe.url } }, [_vm._v("here")])
         ])
       : _vm._e()
   ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("small", [_c("i", { staticClass: "fas fa-times" })])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("p", [_c("br"), _vm._v("We recommend you:")])
+  }
+]
 render._withStripped = true
 
           return {
