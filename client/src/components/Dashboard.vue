@@ -17,6 +17,19 @@
             <small>Click "recommendation!" button after you finished with your ingredients list</small><br>
             <button @click.prevent="getRecommendation">Recommendation!</button>
         </div>
+
+        <div class="result" v-if="recipe.label">
+            We recommend you:
+            <h2>{{ recipe.label }}</h2>
+            <img :src="recipe.image" alt=""><br>
+            Recipe:
+            <ul>
+                <li v-for="(line, index) in recipe.ingredientLines" :key="index">{{ line }}</li>
+            </ul>
+            Diet info: {{ recipe.dietLabels.join(', ') }}<br>
+            Health info: {{ recipe.healthLabels.join(', ') }}<br>
+            How to cook? Click <a :href="recipe.url">here</a>
+        </div>
   </div>
 </template>
 
@@ -29,7 +42,8 @@ export default {
         return {
             newIngredient: '',
             ingredients: ['cheese','rice'],
-            recipe: {}
+            recipe: {},
+            image: ''
         }
     },
     methods: {
@@ -56,7 +70,7 @@ export default {
             })
             .then(({ data }) => {
                 this.recipe = data.recipe
-                console.log(this.recipe)
+                this.image = this.recipe.image
             }).catch(err => {
                 console.log(err)
             })

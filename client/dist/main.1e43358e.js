@@ -10913,13 +10913,27 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 var base_url = 'http://localhost:3000';
 var _default = {
   data: function data() {
     return {
       newIngredient: '',
       ingredients: ['cheese', 'rice'],
-      recipe: {}
+      recipe: {},
+      image: ''
     };
   },
   methods: {
@@ -10950,7 +10964,7 @@ var _default = {
       }).then(function (_ref) {
         var data = _ref.data;
         _this.recipe = data.recipe;
-        console.log(_this.recipe);
+        _this.image = _this.recipe.image;
       }).catch(function (err) {
         console.log(err);
       });
@@ -11073,6 +11087,35 @@ exports.default = _default;
             },
             [_vm._v("Recommendation!")]
           )
+        ])
+      : _vm._e(),
+    _vm._v(" "),
+    _vm.recipe.label
+      ? _c("div", { staticClass: "result" }, [
+          _vm._v("\n          We recommend you:\n          "),
+          _c("h2", [_vm._v(_vm._s(_vm.recipe.label))]),
+          _vm._v(" "),
+          _c("img", { attrs: { src: _vm.recipe.image, alt: "" } }),
+          _c("br"),
+          _vm._v("\n          Recipe:\n          "),
+          _c(
+            "ul",
+            _vm._l(_vm.recipe.ingredientLines, function(line, index) {
+              return _c("li", { key: index }, [_vm._v(_vm._s(line))])
+            }),
+            0
+          ),
+          _vm._v(
+            "\n          Diet info: " + _vm._s(_vm.recipe.dietLabels.join(", "))
+          ),
+          _c("br"),
+          _vm._v(
+            "\n          Health info: " +
+              _vm._s(_vm.recipe.healthLabels.join(", "))
+          ),
+          _c("br"),
+          _vm._v("\n          How to cook? Click "),
+          _c("a", { attrs: { href: _vm.recipe.url } }, [_vm._v("here")])
         ])
       : _vm._e()
   ])
