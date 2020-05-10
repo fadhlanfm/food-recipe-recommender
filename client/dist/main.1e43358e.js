@@ -10689,13 +10689,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //
 //
 //
-//
 var base_url = 'http://localhost:3000';
 var _default = {
   data: function data() {
     return {
-      email: '',
-      password: ''
+      email: 'john@john.com',
+      password: 'john'
     };
   },
   methods: {
@@ -10718,9 +10717,6 @@ var _default = {
       }).catch(function (err) {
         console.log(err);
       });
-    },
-    logout: function logout() {
-      this.$emit('logout', 'FormLogin');
     }
   }
 };
@@ -10738,8 +10734,6 @@ exports.default = _default;
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", [
-    _c("button", { on: { click: _vm.logout } }, [_vm._v("Sign Out")]),
-    _vm._v(" "),
     _vm._m(0),
     _vm._v(" "),
     _c("div", { staticClass: "container" }, [
@@ -10918,12 +10912,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //
 //
 //
+//
 var base_url = 'http://localhost:3000';
 var _default = {
   data: function data() {
     return {
       newIngredient: '',
-      ingredients: []
+      ingredients: ['cheese', 'rice'],
+      recipe: {}
     };
   },
   methods: {
@@ -10933,7 +10929,8 @@ var _default = {
       this.newIngredient = '';
     },
     getRecommendation: function getRecommendation() {
-      console.log(this.ingredients);
+      var _this = this;
+
       var arr = [];
 
       for (var i = 0; i < this.ingredients.length; i++) {
@@ -10946,13 +10943,20 @@ var _default = {
         url: base_url + '/get-recipe',
         data: {
           ingredients: list
+        },
+        headers: {
+          access_token: localStorage.getItem('token')
         }
       }).then(function (_ref) {
         var data = _ref.data;
-        console.log(data);
+        _this.recipe = data.recipe;
+        console.log(_this.recipe);
       }).catch(function (err) {
         console.log(err);
       });
+    },
+    logout: function logout() {
+      this.$emit('logout', 'FormLogin');
     }
   }
 };
@@ -10970,6 +10974,19 @@ exports.default = _default;
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "container" }, [
+    _c(
+      "button",
+      {
+        on: {
+          click: function($event) {
+            $event.preventDefault()
+            return _vm.logout($event)
+          }
+        }
+      },
+      [_vm._v("Sign Out")]
+    ),
+    _vm._v(" "),
     _c("h2", [
       _vm._v(
         "This app will recommend you a food recipe based on your ingredients list"
@@ -11261,7 +11278,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52812" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55847" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

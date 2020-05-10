@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+        <button @click.prevent="logout">Sign Out</button>
         <h2>This app will recommend you a food recipe based on your ingredients list</h2>
         <form @submit.prevent="submitIngredient">
             <label for="1">Insert ingredient:</label>
@@ -27,7 +28,8 @@ export default {
     data() {
         return {
             newIngredient: '',
-            ingredients: []
+            ingredients: ['cheese','rice'],
+            recipe: {}
         }
     },
     methods: {
@@ -37,7 +39,6 @@ export default {
             this.newIngredient = ''
         },
         getRecommendation () {
-            console.log(this.ingredients)
             let arr = []
             for(let i = 0; i < this.ingredients.length; i++) {
                 arr.push(this.ingredients[i])
@@ -48,13 +49,20 @@ export default {
                 url: base_url + '/get-recipe',
                 data: {
                     ingredients: list
+                },
+                headers: {
+                    access_token: localStorage.getItem('token')
                 }
             })
             .then(({ data }) => {
-                console.log(data)
+                this.recipe = data.recipe
+                console.log(this.recipe)
             }).catch(err => {
                 console.log(err)
             })
+        },
+        logout () {
+            this.$emit('logout', 'FormLogin')
         }
     }
 }

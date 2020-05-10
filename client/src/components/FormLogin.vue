@@ -1,6 +1,5 @@
 <template>
   <div>
-        <button @click="logout">Sign Out</button>
         <div class="text-center m-5 title-form">
             <h1>Welcome to the Food Recipe Recommendation App</h1>
         </div>
@@ -36,8 +35,8 @@ const base_url = 'http://localhost:3000'
 export default {
     data() {
         return {
-            email: '',
-            password: ''
+            email: 'john@john.com',
+            password: 'john'
         }
     },
     methods: {
@@ -57,9 +56,6 @@ export default {
             }).catch(err => {
                 console.log(err)
             })
-        },
-        logout () {
-            this.$emit('logout', 'FormLogin')
         }
     }
 }
