@@ -1,6 +1,8 @@
 const { User } = require('../models')
 const { generateToken } = require('../helpers/token')
 const unirest = require('unirest')
+const { OAuth2Client } = require('google-auth-library');
+const client = new OAuth2Client(process.env.CLIENT_ID);
 
 
 class UserController {
@@ -25,9 +27,33 @@ class UserController {
         .catch(next)
     }
 
-    // static googleSignIn (req, res, next) {
-
-    // }
+    static googleSignIn (req, res, next) {
+        let token = req.body.token;
+        let payload = null;
+        client.verifyIdToken({
+            idToken: token,
+            audience: process.env.CLIENT_ID
+        })
+        .then(ticket => {
+            payload = ticket.getPayload();
+            return User.findOne({ where: { email: payload.email } })
+        }).then(data => {
+            if (!data) {
+                 return User.create({
+                    email: payload.email,
+                    password: process.env.DEFAULT_GOOGLE_PASSWORD
+                })
+            } else {
+                return data;
+            }
+        }).then(data => {
+            let newPayload = { id: data.id };
+            let access_token = generateToken(newPayload);
+            res.status(200).json({ access_token });
+        }).catch(err => {
+            next(err);
+        });
+    }
 
     static getRecipe (req, res, next) {
         const { ingredients } = req.body

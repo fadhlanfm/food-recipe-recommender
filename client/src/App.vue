@@ -32,16 +32,17 @@ export default {
         },
         login (data) {
             console.log(data)
-            localStorage.setItem('token', data.access_token)
+            localStorage.setItem('access_token', data.access_token)
             this.currentPage = 'Dashboard'
         },
         logout (currentPage) {
+            this.$gAuth.signOut()
             this.currentPage = currentPage
-            localStorage.removeItem('token')
+            localStorage.removeItem('access_token')
         }
     },
     created() {
-        if (localStorage.getItem('token')) {
+        if (localStorage.getItem('access_token')) {
             this.currentPage = 'Dashboard'
         }
     }

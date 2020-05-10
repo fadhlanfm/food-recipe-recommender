@@ -20,7 +20,7 @@
                         <button type="submit" class="btn btn-primary">Sign In</button>
                         </form>
                         <div class="card-footer">
-                            <p>Or sign in with <a href="" @click.prevent=""><i class="fab fa-google"></i></a></p>
+                            <a href="" @click.prevent="onSuccess">Sign In with <i class="fab fa-google"></i></a>
                         </div>
                 </div>
             </div>
@@ -29,14 +29,17 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import axios from 'axios'
+import GAuth from 'vue-google-oauth2'
 const base_url = 'http://localhost:3000'
 
 export default {
     data() {
         return {
             email: 'john@john.com',
-            password: 'john'
+            password: 'john',
+            clientId: '849567194922-qreemp9urcp6u0i2bcc9a3dcv7n044gs.apps.googleusercontent.com'
         }
     },
     methods: {
@@ -56,11 +59,43 @@ export default {
             }).catch(err => {
                 console.log(err)
             })
-        }
+        },
+        onSuccess() {
+            // console.log('sampe')
+            this.$gAuth.signIn()
+            .then(googleUser => {
+                let token = googleUser.getAuthResponse().id_token
+                this.onSignIn(token)
+            }).catch(err => {
+                console.log(err)
+            })
+        },
+        onSignIn(token) {
+            console.log('sampe')
+            let obj = { token }
+            axios({
+                method: 'POST',
+                url: base_url + '/google-sign-in',
+                data: obj
+            })
+            .then(({ data }) => {
+                this.$emit('login', data)
+            }).catch(err => {
+                console.log(err)
+            })
+        },
     }
 }
 </script>
 
 <style>
-
+.g-signin-button {
+  /* This is where you control how the button looks. Be creative! */
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 3px;
+  background-color: #3c82f7;
+  color: #fff;
+  box-shadow: 0 3px 0 #0f69ff;
+}
 </style>

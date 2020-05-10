@@ -10305,7 +10305,172 @@ module.exports.default = axios;
 
 },{"./utils":"node_modules/axios/lib/utils.js","./helpers/bind":"node_modules/axios/lib/helpers/bind.js","./core/Axios":"node_modules/axios/lib/core/Axios.js","./core/mergeConfig":"node_modules/axios/lib/core/mergeConfig.js","./defaults":"node_modules/axios/lib/defaults.js","./cancel/Cancel":"node_modules/axios/lib/cancel/Cancel.js","./cancel/CancelToken":"node_modules/axios/lib/cancel/CancelToken.js","./cancel/isCancel":"node_modules/axios/lib/cancel/isCancel.js","./helpers/spread":"node_modules/axios/lib/helpers/spread.js"}],"node_modules/axios/index.js":[function(require,module,exports) {
 module.exports = require('./lib/axios');
-},{"./lib/axios":"node_modules/axios/lib/axios.js"}],"../../../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
+},{"./lib/axios":"node_modules/axios/lib/axios.js"}],"node_modules/vue-google-oauth2/index.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var googleAuth = function () {
+  function installClient() {
+    var apiUrl = 'https://apis.google.com/js/api.js';
+    return new Promise(resolve => {
+      var script = document.createElement('script');
+      script.src = apiUrl;
+
+      script.onreadystatechange = script.onload = function () {
+        if (!script.readyState || /loaded|complete/.test(script.readyState)) {
+          setTimeout(function () {
+            resolve();
+          }, 500);
+        }
+      };
+
+      document.getElementsByTagName('head')[0].appendChild(script);
+    });
+  }
+
+  function initClient(config) {
+    return new Promise((resolve, reject) => {
+      window.gapi.load('auth2', () => {
+        window.gapi.auth2.init(config).then(() => {
+          resolve(window.gapi);
+        }).catch(error => {
+          reject(error);
+        });
+      });
+    });
+  }
+
+  function Auth() {
+    if (!(this instanceof Auth)) return new Auth();
+    this.GoogleAuth = null;
+    /* window.gapi.auth2.getAuthInstance() */
+
+    this.isAuthorized = false;
+    this.isInit = false;
+    this.prompt = null;
+
+    this.isLoaded = function () {
+      /* eslint-disable */
+      console.warn('isLoaded() will be deprecated. You can use "this.$gAuth.isInit"');
+      return !!this.GoogleAuth;
+    };
+
+    this.load = (config, prompt) => {
+      installClient().then(() => {
+        return initClient(config);
+      }).then(gapi => {
+        this.GoogleAuth = gapi.auth2.getAuthInstance();
+        this.isInit = true;
+        this.prompt = prompt;
+        this.isAuthorized = this.GoogleAuth.isSignedIn.get();
+      }).catch(error => {
+        console.error(error);
+      });
+    };
+
+    this.signIn = (successCallback, errorCallback) => {
+      return new Promise((resolve, reject) => {
+        if (!this.GoogleAuth) {
+          if (typeof errorCallback === 'function') errorCallback(false);
+          reject(false);
+          return;
+        }
+
+        this.GoogleAuth.signIn().then(googleUser => {
+          if (typeof successCallback === 'function') successCallback(googleUser);
+          this.isAuthorized = this.GoogleAuth.isSignedIn.get();
+          resolve(googleUser);
+        }).catch(error => {
+          if (typeof errorCallback === 'function') errorCallback(error);
+          reject(error);
+        });
+      });
+    };
+
+    this.getAuthCode = (successCallback, errorCallback) => {
+      return new Promise((resolve, reject) => {
+        if (!this.GoogleAuth) {
+          if (typeof errorCallback === 'function') errorCallback(false);
+          reject(false);
+          return;
+        }
+
+        this.GoogleAuth.grantOfflineAccess({
+          prompt: this.prompt
+        }).then(function (resp) {
+          if (typeof successCallback === 'function') successCallback(resp.code);
+          resolve(resp.code);
+        }).catch(function (error) {
+          if (typeof errorCallback === 'function') errorCallback(error);
+          reject(error);
+        });
+      });
+    };
+
+    this.signOut = (successCallback, errorCallback) => {
+      return new Promise((resolve, reject) => {
+        if (!this.GoogleAuth) {
+          if (typeof errorCallback === 'function') errorCallback(false);
+          reject(false);
+          return;
+        }
+
+        this.GoogleAuth.signOut().then(() => {
+          if (typeof successCallback === 'function') successCallback();
+          this.isAuthorized = false;
+          resolve(true);
+        }).catch(error => {
+          if (typeof errorCallback === 'function') errorCallback(error);
+          reject(error);
+        });
+      });
+    };
+  }
+
+  return new Auth();
+}();
+
+function installGoogleAuthPlugin(Vue, options) {
+  /* eslint-disable */
+  //set config
+  let GoogleAuthConfig = null;
+  let GoogleAuthDefaultConfig = {
+    scope: 'profile email',
+    discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest']
+  };
+  let prompt = 'select_account';
+
+  if (typeof options === 'object') {
+    GoogleAuthConfig = Object.assign(GoogleAuthDefaultConfig, options);
+    if (options.scope) GoogleAuthConfig.scope = options.scope;
+    if (options.prompt) prompt = options.prompt;
+
+    if (!options.clientId) {
+      console.warn('clientId is required');
+    }
+  } else {
+    console.warn('invalid option type. Object type accepted only');
+  } //Install Vue plugin
+
+
+  Vue.gAuth = googleAuth;
+  Object.defineProperties(Vue.prototype, {
+    $gAuth: {
+      get: function () {
+        return Vue.gAuth;
+      }
+    }
+  });
+  Vue.gAuth.load(GoogleAuthConfig, prompt);
+}
+
+var _default = installGoogleAuthPlugin;
+exports.default = _default;
+},{}],"../../../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
 var bundleURL = null;
 
 function getBundleURLCached() {
@@ -10655,7 +10820,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
+var _vue = _interopRequireDefault(require("vue"));
+
 var _axios = _interopRequireDefault(require("axios"));
+
+var _vueGoogleOauth = _interopRequireDefault(require("vue-google-oauth2"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -10694,7 +10863,8 @@ var _default = {
   data: function data() {
     return {
       email: 'john@john.com',
-      password: 'john'
+      password: 'john',
+      clientId: '849567194922-qreemp9urcp6u0i2bcc9a3dcv7n044gs.apps.googleusercontent.com'
     };
   },
   methods: {
@@ -10714,6 +10884,37 @@ var _default = {
         _this.password = '';
 
         _this.$emit('login', data);
+      }).catch(function (err) {
+        console.log(err);
+      });
+    },
+    onSuccess: function onSuccess() {
+      var _this2 = this;
+
+      // console.log('sampe')
+      this.$gAuth.signIn().then(function (googleUser) {
+        var token = googleUser.getAuthResponse().id_token;
+
+        _this2.onSignIn(token);
+      }).catch(function (err) {
+        console.log(err);
+      });
+    },
+    onSignIn: function onSignIn(token) {
+      var _this3 = this;
+
+      console.log('sampe');
+      var obj = {
+        token: token
+      };
+      (0, _axios.default)({
+        method: 'POST',
+        url: base_url + '/google-sign-in',
+        data: obj
+      }).then(function (_ref2) {
+        var data = _ref2.data;
+
+        _this3.$emit('login', data);
       }).catch(function (err) {
         console.log(err);
       });
@@ -10816,21 +11017,22 @@ exports.default = _default;
           ),
           _vm._v(" "),
           _c("div", { staticClass: "card-footer" }, [
-            _c("p", [
-              _vm._v("Or sign in with "),
-              _c(
-                "a",
-                {
-                  attrs: { href: "" },
-                  on: {
-                    click: function($event) {
-                      $event.preventDefault()
-                    }
+            _c(
+              "a",
+              {
+                attrs: { href: "" },
+                on: {
+                  click: function($event) {
+                    $event.preventDefault()
+                    return _vm.onSuccess($event)
                   }
-                },
-                [_c("i", { staticClass: "fab fa-google" })]
-              )
-            ])
+                }
+              },
+              [
+                _vm._v("Sign In with "),
+                _c("i", { staticClass: "fab fa-google" })
+              ]
+            )
           ])
         ])
       ])
@@ -10879,7 +11081,7 @@ render._withStripped = true
       
       }
     })();
-},{"axios":"node_modules/axios/index.js","_css_loader":"../../../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/css-loader.js","vue-hot-reload-api":"node_modules/vue-hot-reload-api/dist/index.js","vue":"node_modules/vue/dist/vue.runtime.esm.js"}],"src/components/Dashboard.vue":[function(require,module,exports) {
+},{"vue":"node_modules/vue/dist/vue.runtime.esm.js","axios":"node_modules/axios/index.js","vue-google-oauth2":"node_modules/vue-google-oauth2/index.js","_css_loader":"../../../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/css-loader.js","vue-hot-reload-api":"node_modules/vue-hot-reload-api/dist/index.js"}],"src/components/Dashboard.vue":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11114,7 +11316,7 @@ exports.default = _default;
           _vm._v(" "),
           _c("h2", [_vm._v(_vm._s(_vm.recipe.label))]),
           _vm._v(" "),
-          _c("img", { attrs: { src: _vm.recipe.image, alt: "" } }),
+          _c("img", { attrs: { src: _vm.recipe.image } }),
           _c("br"),
           _vm._v("\n          Recipe:\n          "),
           _c(
@@ -11241,16 +11443,17 @@ var _default = {
     },
     login: function login(data) {
       console.log(data);
-      localStorage.setItem('token', data.access_token);
+      localStorage.setItem('access_token', data.access_token);
       this.currentPage = 'Dashboard';
     },
     logout: function logout(currentPage) {
+      this.$gAuth.signOut();
       this.currentPage = currentPage;
-      localStorage.removeItem('token');
+      localStorage.removeItem('access_token');
     }
   },
   created: function created() {
-    if (localStorage.getItem('token')) {
+    if (localStorage.getItem('access_token')) {
       this.currentPage = 'Dashboard';
     }
   }
@@ -11327,14 +11530,22 @@ var _vue = _interopRequireDefault(require("vue"));
 
 var _App = _interopRequireDefault(require("./App.vue"));
 
+var _vueGoogleOauth = _interopRequireDefault(require("vue-google-oauth2"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var gauthOption = {
+  clientId: '849567194922-qreemp9urcp6u0i2bcc9a3dcv7n044gs.apps.googleusercontent.com'
+};
+
+_vue.default.use(_vueGoogleOauth.default, gauthOption);
 
 new _vue.default({
   render: function render(h) {
     return h(_App.default);
   }
 }).$mount('#app');
-},{"vue":"node_modules/vue/dist/vue.runtime.esm.js","./App.vue":"src/App.vue"}],"../../../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"vue":"node_modules/vue/dist/vue.runtime.esm.js","./App.vue":"src/App.vue","vue-google-oauth2":"node_modules/vue-google-oauth2/index.js"}],"../../../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -11362,7 +11573,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55847" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61298" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

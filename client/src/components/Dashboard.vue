@@ -21,7 +21,7 @@
         <div class="result" v-if="recipe.label">
             <p><br>We recommend you:</p>
             <h2>{{ recipe.label }}</h2>
-            <img :src="recipe.image" alt=""><br>
+            <img :src="recipe.image"><br>
             Recipe:
             <ul>
                 <li v-for="(line, index) in recipe.ingredientLines" :key="index">{{ line }}</li>
